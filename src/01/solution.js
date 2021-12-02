@@ -1,6 +1,6 @@
 'use strict';
 
-const lines = require('fs').readFileSync('src/01-a.txt', 'utf-8').split('\n').map(Number);
+const lines = require('fs').readFileSync(__dirname + '/actual.txt', 'utf-8').split('\n').map(Number);
 
 let increases = 0;
 for (let i = 3; i < lines.length; i++) {

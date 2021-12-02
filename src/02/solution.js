@@ -1,6 +1,6 @@
 'use strict';
 
-const lines = require('fs').readFileSync('src/02-a.txt', 'utf-8').split('\n').map(l => {
+const lines = require('fs').readFileSync(__dirname + '/actual.txt', 'utf-8').split('\n').map(l => {
   const parts = l.split(' ');
   return [parts[0], parseInt(parts[1])]
 });
@@ -19,9 +19,6 @@ lines.forEach(([dir, c]) => {
   } else {
     aim -= c;
   }
-  console.log({ forward, depth, aim });
 });
-
-console.log(forward, depth);
 
 console.log(forward * depth);
