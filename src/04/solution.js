@@ -48,20 +48,21 @@ const sumOfUnmarked = board => {
 };
 
 let lasBoardIndex;
+let nonWinnerboards;
+let draw;
+let i = 0;
 
-draws.forEach(draw => {
+do {
+  draw = draws[i];
+  i = i + 1;
+
   boards.forEach(board => markDrawOnBoard(draw, board));
 
-  const nonWinnerboards = boards.filter(board => !isBoardWinner(board));
+  nonWinnerboards = boards.filter(board => !isBoardWinner(board));
   if (nonWinnerboards.length === 1) {
     lasBoardIndex = boards.indexOf(nonWinnerboards[0]);
   }
-  if (nonWinnerboards.length === 0) {
-    const board = boards[lasBoardIndex];
-    console.log(sumOfUnmarked(board));
-    console.log(draw);
-    console.log(draw * sumOfUnmarked(board));
-    process.exit();
-  }
+} while (nonWinnerboards.length > 0);
 
-});
+const board = boards[lasBoardIndex];
+console.log(draw * sumOfUnmarked(board));
