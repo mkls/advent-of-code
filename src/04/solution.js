@@ -47,14 +47,21 @@ const sumOfUnmarked = board => {
   );
 };
 
+let lasBoardIndex;
+
 draws.forEach(draw => {
   boards.forEach(board => markDrawOnBoard(draw, board));
 
-  const winnerBoard = boards.find(isBoardWinner);
-  if (winnerBoard) {
-    console.log(sumOfUnmarked(winnerBoard));
+  const nonWinnerboards = boards.filter(board => !isBoardWinner(board));
+  if (nonWinnerboards.length === 1) {
+    lasBoardIndex = boards.indexOf(nonWinnerboards[0]);
+  }
+  if (nonWinnerboards.length === 0) {
+    const board = boards[lasBoardIndex];
+    console.log(sumOfUnmarked(board));
     console.log(draw);
-    console.log(draw * sumOfUnmarked(winnerBoard));
+    console.log(draw * sumOfUnmarked(board));
     process.exit();
   }
+
 });
