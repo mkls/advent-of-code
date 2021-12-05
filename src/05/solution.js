@@ -12,16 +12,10 @@ const toCoordinates = t => {
 let lines = require('fs')
   .readFileSync(__dirname + '/actual.txt', 'utf-8')
   .split('\n')
-  .map(line => line.split(' -> '))
-  .map(([s, e]) => [toCoordinates(s), toCoordinates(e)])
+  .map(line => line.split(' -> ').map(toCoordinates))
   .filter(([s, e]) => s.x === e.x || s.y === e.y || Math.abs(s.y - e.y) == Math.abs(s.x - e.x));
 
-const getRange = (s, e) => {
-  if (e >= s) {
-    return range(s, e + 1);
-  }
-  return range(e, s + 1).reverse();
-};
+const getRange = (s, e) => e >= s ? range(s, e + 1) : range(e, s + 1).reverse();
 
 const pointsOfLine = line => {
   if (line[0].x === line[1].x) {
