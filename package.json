@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "clear; node src/05/solution.js"
+    "test": "clear; node src/06/solution.js"
   },
   "repository": {
     "type": "git",
