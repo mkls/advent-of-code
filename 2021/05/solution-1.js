@@ -2,8 +2,6 @@
 
 const { range, filter } = require('lodash');
 
-console.log('\n\n\n\n---- Script start -----\n\n\n\n');
-
 const toCoordinates = t => {
   const parsed = t.split(',').map(Number);
   return { x: parsed[0], y: parsed[1] };

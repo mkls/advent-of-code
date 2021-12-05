@@ -1,7 +1,5 @@
 'use strict';
 
-console.log('\n\n ---- Script start ----- \n\n');
-
 const numbers = require('fs')
   .readFileSync(__dirname + '/actual.txt', 'utf-8')
   .split('\n')
