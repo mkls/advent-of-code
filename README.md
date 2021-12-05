@@ -1,1 +1,3 @@
-# advent-of-code-2021
+# advent-of-code
+
+My advent of code solutions.
