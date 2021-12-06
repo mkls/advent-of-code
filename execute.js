@@ -1,6 +1,6 @@
 'use strict';
 
-console.log('\n\n ---- Script start ----- \n\n');
+console.log('\n\n ------------------------------ Script start ------------------------------ \n\n');
 
 const args = process.argv.slice(2);
 
