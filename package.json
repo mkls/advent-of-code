@@ -18,5 +18,8 @@
   "homepage": "https://github.com/mkls/advent-of-code-2021#readme",
   "dependencies": {
     "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "eslint": "^8.4.0"
   }
 }
