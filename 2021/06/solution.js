@@ -1,35 +1,31 @@
 'use strict';
 
-const { groupBy, mapValues, toPairs, sumBy, map } = require('lodash');
+const _ = require('lodash');
 
-let fishes = require('fs')
+const fishes = require('fs')
   .readFileSync(__dirname + '/actual.txt', 'utf-8')
   .split(',')
   .map(Number);
 
-let counts = toPairs(
-  mapValues(
-    groupBy(fishes, a => a),
-    value => value.length
-  )
-).map(([days, count]) => ({ day: +days, count }));
+const add = (counter, key, value) => {
+  counter[key] = (counter[key] || 0) + value;
+};
 
+let counts = {};
+fishes.forEach(fish => add(counts, fish, 1));
 
-for (let i = 1; i <= 256; i++) {
-  const newCounts = counts.flatMap(({ day, count }) => {
+_.range(256).forEach(() => {
+  const nextCounts = {};
+  Object.entries(counts).forEach(([day, count]) => {
+    day = +day;
     if (day === 0) {
-      return [
-        { day: 6, count },
-        { day: 8, count }
-      ];
+      add(nextCounts, 6, count);
+      add(nextCounts, 8, count);
+    } else {
+      add(nextCounts, day - 1, count);
     }
-    return [{ day: day - 1, count }];
   });
-  const grouped = mapValues(groupBy(newCounts, 'day'), v => ({
-    day: v[0].day,
-    count: sumBy(v, 'count')
-  }));
-  counts = map(grouped, a => a);
-}
+  counts = nextCounts;
+});
 
-console.log(sumBy(counts, 'count'));
+console.log(_.sum(Object.values(counts)));
