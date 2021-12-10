@@ -6,32 +6,12 @@ const lines = require('fs')
   .readFileSync(__dirname + '/actual.txt', 'utf-8')
   .split('\n');
 
-const findClosers = line => {
-  let stack = [];
-  const cs = line.split('');
-
-  for (let c of cs) {
-    if (isOpen(c)) {
-      stack.push(c);
-    } else if (isMatchingClose(c, _.last(stack))) {
-      stack.pop(c);
-    } else {
-      return { valid: false };
-    }
-  }
-  return { valid: true, close: stack.reverse().map(c => matchingClosers[c]) };
-};
-
-const isOpen = c => '([{<'.includes(c);
-const isMatchingClose = (c, open) => matchingClosers[open] === c;
-
 const matchingClosers = {
   '(': ')',
   '[': ']',
   '{': '}',
   '<': '>'
 };
-
 const points = {
   ')': 1,
   ']': 2,
@@ -39,10 +19,22 @@ const points = {
   '>': 4
 };
 
-const score = closers =>
-  closers.reduce((accu, item) => {
-    return 5 * accu + points[item];
-  }, 0);
+const findClosers = line => {
+  let stack = [];
+
+  for (let c of line.split('')) {
+    if ('([{<'.includes(c)) {
+      stack.push(c);
+    } else if (c === matchingClosers[_.last(stack)]) {
+      stack.pop();
+    } else {
+      return { valid: false };
+    }
+  }
+  return { valid: true, close: stack.reverse().map(c => matchingClosers[c]) };
+};
+
+const score = closers => closers.reduce((accu, item) => 5 * accu + points[item], 0);
 
 const res = lines
   .map(findClosers)
