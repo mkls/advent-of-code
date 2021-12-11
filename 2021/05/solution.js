@@ -1,39 +1,32 @@
 'use strict';
 
-const { range, filter } = require('lodash');
+const { range, groupBy, filter } = require('lodash');
 
-const toCoordinates = t => {
-  const parsed = t.split(',').map(Number);
-  return { x: parsed[0], y: parsed[1] };
-};
-
-let lines = require('fs')
+const lines = require('fs')
   .readFileSync(__dirname + '/actual.txt', 'utf-8')
   .split('\n')
-  .map(line => line.split(' -> ').map(toCoordinates))
-  .filter(([s, e]) => s.x === e.x || s.y === e.y || Math.abs(s.y - e.y) == Math.abs(s.x - e.x));
+  .map(line => line.split(' -> ').map(c => c.split(',').map(Number)));
 
-const getRange = (s, e) => e >= s ? range(s, e + 1) : range(e, s + 1).reverse();
+const getRange = (start, end) =>
+  start <= end ? range(start, end + 1) : range(end, start + 1).reverse();
 
-const pointsOfLine = line => {
-  if (line[0].x === line[1].x) {
-    return getRange(line[0].y, line[1].y).map(y => ({ x: line[0].x, y }));
+const pointsForLine = ([start, end]) => {
+  if (start[0] === end[0]) {
+    return getRange(start[1], end[1]).map(y => [start[0], y]);
   }
-  if (line[0].y === line[1].y) {
-    return getRange(line[0].x, line[1].x).map(x => ({ x, y: line[0].y }));
+  if (start[1] === end[1]) {
+    return getRange(start[0], end[0]).map(x => [x, start[1]]);
   }
-  const xRange = getRange(line[0].x, line[1].x);
-  const yRange = getRange(line[0].y, line[1].y);
-
-  return xRange.map((x, i) => ({ x, y: yRange[i] }));
+  if (Math.abs(start[0] - end[0]) === Math.abs(start[1] - end[1])) {
+    const xrange = getRange(start[0], end[0]);
+    const yrange = getRange(start[1], end[1]);
+    return xrange.map((x, i) => [x, yrange[i]]);
+  }
+  return [];
 };
 
-const allPointsToMark = lines.flatMap(pointsOfLine);
+const points = lines.flatMap(pointsForLine);
 
-const counter = {};
-allPointsToMark.map(JSON.stringify).map(id => {
-  counter[id] = (counter[id] || 0) + 1;
-});
+const result = filter(groupBy(points, JSON.stringify), value => value.length >= 2).length;
 
-const twice = filter(counter, value => value >= 2).length;
-console.dir(twice, { depth: null });
+console.log(result);
