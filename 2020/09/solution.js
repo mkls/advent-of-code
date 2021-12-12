@@ -9,7 +9,7 @@ const input = require('fs')
 
 const lookBack = 25;
 
-const res = input.find((v, i) => {
+const result1 = input.find((v, i) => {
   if (i <= lookBack) return false;
 
   const preamble = input.slice(i - lookBack, i);
@@ -20,21 +20,10 @@ const res = input.find((v, i) => {
   return !options.includes(v);
 });
 
-console.log({ 'result 1': res });
+console.log({ result1 });
 
+const res = _.range(0, input.length - 1)
+  .flatMap(start => _.range(start + 2, input.length).map(end => input.slice(start, end)))
+  .find(range => _.sum(range) === result1);
 
-let found = false;
-let start = 0;
-let end;
-while (!found && start < input.length - 2) {
-  for (end = start + 2; !found && end < input.length; end++) {
-    if (_.sum(input.slice(start, end)) === res) {
-      found = true;
-    }
-  }
-  start++;
-}
-
-const theRange = input.slice(start -1, end -1);
-
-console.log(Math.min(...theRange) + Math.max(...theRange));
+console.log(Math.min(...res) + Math.max(...res));
