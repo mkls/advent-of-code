@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash'); // eslint-disable-line no-unused-vars
+const common = require('../../common');
 
 const input = require('fs').readFileSync(__dirname + '/actual.txt', 'utf-8');
 let [points, folds] = input.split('\n\n');
@@ -23,15 +24,4 @@ const fold = (points, instr) => {
 
 const res = folds.reduce((points, instr) => fold(points, instr), points);
 
-const print = points => {
-  const xRange = Math.max(...points.map(c => c[0]));
-  const yRange = Math.max(...points.map(c => c[1]));
-
-  const board = _.range(0, yRange + 1).map(() => _.range(0, xRange + 1).map(() => '.'));
-
-  points.forEach(([x, y]) => board[y][x] = '#')
-  const out = board.map(row => row.join('')).join('\n');
-  console.log(out);
-};
-
-print(res);
+common.printPoints(res);
