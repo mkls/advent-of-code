@@ -19,12 +19,9 @@ const insert = template => {
   return pairs.map(pair => pair[0] + rules[pair]).join('') + _.last(chars);
 };
 
-let res = template;
-_.range(0, 10).map(() => {
-  res = insert(res);
-})
+const res = _.range(0, 10).reduce(insert, template);
 
-const counts = _.sortBy(_.toPairs(_.groupBy(res.split(''), a => a)).map(([c, cs]) => ({ c, count: cs.length })), 'count');
 console.log(res.length);
 
-console.log(_.last(counts).count - counts[0].count);
+const counts = _.sortBy(_.toPairs(_.countBy(res.split(''))).map(c => c[1]));
+console.log(_.last(counts) - counts[0]);

@@ -12,12 +12,12 @@ rawRules.split('\n').map(l => {
   rules[template] = insertion;
 });
 
-const chars = template.split('');
-const pairs = chars.slice(0, -1).map((c, i) => `${c}${chars[i + 1]}`);
-
 const addPair = (templ, pair, count) => {
   templ[pair] = (templ[pair] || 0) + count;
 };
+
+const chars = template.split('');
+const pairs = chars.slice(0, -1).map((c, i) => `${c}${chars[i + 1]}`);
 const initialCounts = {};
 pairs.forEach(p => addPair(initialCounts, p, 1));
 
@@ -31,10 +31,7 @@ const insert = templ => {
   return newTempl;
 };
 
-let res = initialCounts;
-_.range(0, 40).map(() => {
-  res = insert(res);
-});
+const res = _.range(0, 40).reduce(insert, initialCounts);
 
 const charCounts = _.toPairs(res).flatMap(([pair, count]) =>
   pair.split('').map(c => ({ c, count }))
