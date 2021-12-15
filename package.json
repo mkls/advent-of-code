@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/mkls/advent-of-code-2021#readme",
   "dependencies": {
+    "dijkstrajs": "^1.0.2",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
