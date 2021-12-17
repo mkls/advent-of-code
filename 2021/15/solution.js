@@ -1,7 +1,6 @@
 'use strict';
 
 const _ = require('lodash'); // eslint-disable-line no-unused-vars
-const common = require('../../common'); // eslint-disable-line no-unused-vars
 const { find_path } = require('dijkstrajs');
 
 let lines = require('fs')
