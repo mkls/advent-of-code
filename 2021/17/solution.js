@@ -2,7 +2,7 @@
 
 const _ = require('lodash'); // eslint-disable-line no-unused-vars
 
-// const target = { x: [20, 30], y: [-10, -5] };
+// const target = { x: [20, 30], y: [-10, -5] }; // example
 const target = { x: [257, 286], y: [-101, -57] }; // actual
 
 const isInRange = (v, target) => v >= target[0] && v <= target[1];
