@@ -2,45 +2,36 @@
 
 const _ = require('lodash'); // eslint-disable-line no-unused-vars
 
-const findExplodePoint = root => {
-  let nodesToVisit = [{ value: root, path: [] }];
-  let explodePoint = null;
-  let previousNumberPath = null;
-  let nextNumberPath = null;
-
-  while (nodesToVisit.length > 0) {
-    const { value, path } = nodesToVisit.shift();
-
-    const isNumber = typeof value === 'number';
-
-    if (!isNumber) {
-      const childNodes = value.map((v, i) => ({ value: v, path: [...path, i] }));
-      nodesToVisit = [...childNodes, ...nodesToVisit];
-    }
-
-    if (isNumber && !explodePoint) previousNumberPath = path;
-    const isInsideexplodePoint =
-      explodePoint && _.isEqual(path.slice(0, explodePoint.length), explodePoint);
-    if (isNumber && explodePoint && !nextNumberPath && !isInsideexplodePoint) nextNumberPath = path;
-    if (!isNumber && path.length === 4 && !explodePoint) explodePoint = path;
-  }
-  return { explodePoint, previousNumberPath, nextNumberPath };
+exports.getPaths = vs => {
+  if (!_.isArray(vs)) return [{ path: [], isLeaf: true }];
+  return [
+    { path: [], isLeaf: false },
+    ...vs.flatMap((v, i) => this.getPaths(v).map(r => ({ ...r, path: [i, ...r.path] })))
+  ];
 };
 
 exports.explode = v => {
-  const { explodePoint, previousNumberPath, nextNumberPath } = findExplodePoint(v);
-  if (!explodePoint) return { changed: false };
+  const paths = this.getPaths(v);
 
+  const pathToExplode = paths.find(p => p.path.length === 4 && !p.isLeaf);
+  if (!pathToExplode) return { changed: false };
+
+  const toExplode = _.get(v, pathToExplode.path);
   v = _.cloneDeep(v);
-  const exploding = _.get(v, explodePoint);
-  if (previousNumberPath) {
-    _.set(v, previousNumberPath, _.get(v, previousNumberPath) + exploding[0]);
-  }
-  if (nextNumberPath) {
-    _.set(v, nextNumberPath, _.get(v, nextNumberPath) + exploding[1]);
-  }
-  _.set(v, explodePoint, 0);
+
+  const indexOfToExplodePath = paths.indexOf(pathToExplode);
+  const pathsToLeft = paths.slice(0, indexOfToExplodePath).reverse();
+  addToNextLeaf(v, pathsToLeft, toExplode[0]);
+  const pathsToRight = paths.slice(indexOfToExplodePath + 3);
+  addToNextLeaf(v, pathsToRight, toExplode[1]);
+
+  _.set(v, pathToExplode.path, 0);
   return { changed: true, v };
+};
+
+const addToNextLeaf = (v, paths, toAdd) => {
+  const nextLeaf = paths.find(p => p.isLeaf);
+  if (nextLeaf) _.set(v, nextLeaf.path, _.get(v, nextLeaf.path) + toAdd);
 };
 
 exports.split = v => {
@@ -61,7 +52,6 @@ exports.reduce = v =>
     return this.reduce(v);
   }, v);
 
-
 exports.magnitude = v => {
   if (!Array.isArray(v)) return v;
   return 3 * this.magnitude(v[0]) + 2 * this.magnitude(v[1]);
@@ -70,10 +60,10 @@ exports.magnitude = v => {
 exports.part1 = vs => {
   const added = vs.reduce((accu, v) => this.reduce([accu, v]));
   return this.magnitude(added);
-}
+};
 
 exports.part2 = vs => {
   const pairs = vs.flatMap(a => vs.map(b => [a, b])).filter(p => p[0] !== p[1]);
   const magnitudes = pairs.map(p => this.magnitude(this.reduce(p)));
   return Math.max(...magnitudes);
-}
+};
