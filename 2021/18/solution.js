@@ -2,11 +2,6 @@
 
 const _ = require('lodash'); // eslint-disable-line no-unused-vars
 
-const numbers = require('fs')
-  .readFileSync(__dirname + '/actual.txt', 'utf-8')
-  .split('\n')
-  .map(JSON.parse);
-
 const findExplodePoint = root => {
   let nodesToVisit = [{ value: root, path: [] }];
   let explodePoint = null;
@@ -32,10 +27,11 @@ const findExplodePoint = root => {
   return { explodePoint, previousNumberPath, nextNumberPath };
 };
 
-const explode = v => {
+exports.explode = v => {
   const { explodePoint, previousNumberPath, nextNumberPath } = findExplodePoint(v);
   if (!explodePoint) return { changed: false };
 
+  v = _.cloneDeep(v);
   const exploding = _.get(v, explodePoint);
   if (previousNumberPath) {
     _.set(v, previousNumberPath, _.get(v, previousNumberPath) + exploding[0]);
@@ -47,7 +43,7 @@ const explode = v => {
   return { changed: true, v };
 };
 
-const split = v => {
+exports.split = v => {
   const asJson = JSON.stringify(v);
   const numbers = asJson.split(/[^0-9]+/).map(Number);
   const toSplit = numbers.find(n => n >= 10);
@@ -55,32 +51,29 @@ const split = v => {
 
   const newValue = [Math.floor(toSplit / 2), Math.ceil(toSplit / 2)];
   const newJson = asJson.replace(`${toSplit}`, JSON.stringify(newValue));
-  return {
-    changed: true,
-    v: JSON.parse(newJson)
-  };
+  return { changed: true, v: JSON.parse(newJson) };
 };
 
-const reduce = v =>
-  [explode, split].reduce((accu, func) => {
+exports.reduce = v =>
+  [this.explode, this.split].reduce((accu, func) => {
     const { changed, v } = func(accu);
     if (!changed) return accu;
-    return reduce(v);
+    return this.reduce(v);
   }, v);
 
-const add = (a, b) => reduce([a, b]);
 
-const addAll = vs => vs.reduce(add);
-
-const magnitude = v => {
+exports.magnitude = v => {
   if (!Array.isArray(v)) return v;
-  return 3 * magnitude(v[0]) + 2 * magnitude(v[1]);
+  return 3 * this.magnitude(v[0]) + 2 * this.magnitude(v[1]);
 };
 
-const numbersForPartOne = numbers.map(_.cloneDeep);
-console.log('result 1', magnitude(addAll(numbersForPartOne)));
+exports.part1 = vs => {
+  const added = vs.reduce((accu, v) => this.reduce([accu, v]));
+  return this.magnitude(added);
+}
 
-const pairsToAdd = numbers.flatMap(a => numbers.map(b => [a, b])).filter(p => p[0] !== p[1]);
-const magnitudes = pairsToAdd.map(p => magnitude(reduce(_.cloneDeep(p))));
-
-console.log('result 2', Math.max(...magnitudes));
+exports.part2 = vs => {
+  const pairs = vs.flatMap(a => vs.map(b => [a, b])).filter(p => p[0] !== p[1]);
+  const magnitudes = pairs.map(p => this.magnitude(this.reduce(p)));
+  return Math.max(...magnitudes);
+}

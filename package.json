@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "clear; node execute.js"
+    "test": "jest --watch",
+    "solution": "clear; node execute.js"
   },
   "repository": {
     "type": "git",
@@ -18,6 +19,7 @@
   "homepage": "https://github.com/mkls/advent-of-code-2021#readme",
   "dependencies": {
     "dijkstrajs": "^1.0.2",
+    "jest": "^27.4.5",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
