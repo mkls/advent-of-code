@@ -1,6 +1,6 @@
 'use strict';
 
-const { getPaths, explode, split, reduce, magnitude, part1, part2 } = require('./solution');
+const { explode, split, reduce, magnitude, part1, part2 } = require('./solution');
 
 const input = require('fs')
   .readFileSync(__dirname + '/input.txt', 'utf-8')
@@ -8,26 +8,6 @@ const input = require('fs')
   .map(JSON.parse);
 
 describe('2020 day 18', () => {
-  describe('getPaths', () => {
-    it('top level items', () => {
-      const result = getPaths([1, 2]);
-      expect(result).toEqual([
-        { path: [], isLeaf: false },
-        { path: [0], isLeaf: true },
-        { path: [1], isLeaf: true }
-      ]);
-    });
-
-    it('1 level deep', () => {
-      const result = getPaths([[1]]);
-      expect(result).toEqual([
-        { path: [], isLeaf: false },
-        { path: [0], isLeaf: false },
-        { path: [0, 0], isLeaf: true }
-      ]);
-    });
-  });
-
   describe('explode', () => {
     it('not deep enough', () => {
       const result = explode(JSON.parse('[[1,2],[[3,4],5]]'));
