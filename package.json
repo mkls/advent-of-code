@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --watch",
-    "solution": "clear; node execute.js"
+    "solve": "clear; node execute.js"
   },
   "repository": {
     "type": "git",
@@ -20,7 +20,8 @@
   "dependencies": {
     "dijkstrajs": "^1.0.2",
     "jest": "^27.4.5",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "mathjs": "^10.0.0"
   },
   "devDependencies": {
     "eslint": "^8.4.0"
