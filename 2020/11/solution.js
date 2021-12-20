@@ -2,41 +2,66 @@
 
 const _ = require('lodash'); // eslint-disable-line no-unused-vars
 
-exports.round = input => {
-  const getNeighbours = (x, y) =>
-    _.range(x - 1, x + 2)
-      .flatMap(nx => _.range(y - 1, y + 2).map(ny => [nx, ny]))
-      .filter(([nx, ny]) => !(nx == x && ny == y))
-      .map(([x, y]) => _.get(input, [y, x]));
+const grid = require('fs')
+  .readFileSync(__dirname + '/actual.txt', 'utf-8')
+  .split('\n')
+  .map(l => l.split(''));
 
+const isOutside = ([x, y]) => x < 0 || x >= grid[0].length || y < 0 || y >= grid.length;
+
+const getFirstSeat = (point, dir) => {
+  const pointToCheck = [point[0] + dir[0], point[1] + dir[1]];
+  if (isOutside(pointToCheck)) return null;
+  if (['L', '#'].includes(grid[pointToCheck[1]][pointToCheck[0]])) return pointToCheck;
+  return getFirstSeat(pointToCheck, dir);
+};
+
+const getNeighbourCoordinates = point =>
+  [
+    [-1, -1],
+    [0, -1],
+    [1, -1],
+    [1, 0],
+    [1, 1],
+    [0, 1],
+    [-1, 1],
+    [-1, 0]
+  ]
+    .map(dir => getFirstSeat(point, dir))
+    .filter(c => c !== null)
+    .map(c => `${c[0]},${c[1]}`);
+
+const seatNeighbours = {};
+const seatValues = {};
+
+grid.forEach((row, y) => {
+  row.forEach((v, x) => {
+    if (v === '.') return;
+    seatNeighbours[`${x},${y}`] = getNeighbourCoordinates([x, y]);
+    seatValues[`${x},${y}`] = v;
+  });
+});
+
+const iterate = seatValues => {
+  const newSeatValues = {};
   let changed = false;
-  const result = input.map((row, y) =>
-    row.map((v, x) => {
-      if (v === '.') return v;
-      const neighbourCounts = _.countBy(getNeighbours(x, y));
-
-      if (v === 'L' && neighbourCounts['#'] === undefined) {
-        changed = true;
-        return '#';
-      }
-      if (v === '#' && _.get(neighbourCounts, '#') >= 4) {
-        changed = true;
-        return 'L';
-      }
-      return v;
-    })
-  );
-  return { changed, result };
+  _.forEach(seatValues, (value, point) => {
+    const neigbourCounts = _.countBy(seatNeighbours[point].map(n => seatValues[n]));
+    const newValue =
+      neigbourCounts['#'] === undefined ? '#' : neigbourCounts['#'] >= 5 ? 'L' : value;
+    if (newValue !== value) {
+      changed = true;
+    }
+    newSeatValues[point] = newValue;
+  });
+  return { changed, newSeatValues };
 };
 
-exports.part1 = input => {
-  let current = input;
-  let isChanged;
-
-  do {
-    const { changed, result } = this.round(current);
-    current = result;
-    isChanged = changed;
-  } while (isChanged === true);
-  return _.countBy(current.flat())['#'];
+const getFinalState = seatValues => {
+  const { changed, newSeatValues } = iterate(seatValues);
+  if (!changed) return newSeatValues;
+  return getFinalState(newSeatValues);
 };
+
+const result = getFinalState(seatValues);
+console.log(_.countBy(result));

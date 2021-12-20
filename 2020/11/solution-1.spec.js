@@ -1,8 +1,8 @@
 'use strict';
 
-const solution = require('./solution');
+const solution = require('./solution-1');
 
-const input = require('fs').readFileSync(__dirname + '/input.txt', 'utf-8');
+const input = require('fs').readFileSync(__dirname + '/actual.txt', 'utf-8');
 
 const trim = map =>
   map
@@ -85,8 +85,8 @@ describe('2020 day 11', () => {
     expect(result).toEqual(37);
   });
 
-  xit('part 1', () => {
+  it('part 1', () => {
     const result = solution.part1(parse(input));
-    expect(result).toEqual(37);
+    expect(result).toEqual(2427);
   });
 });
