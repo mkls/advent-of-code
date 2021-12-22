@@ -11,7 +11,7 @@ let lines = require('fs')
     return { action, range };
   });
 
-exports.splitToNonOverlappingRanges = (toSplit, splitBy) => {
+exports.splitToNonOverlappingRanges1D = (toSplit, splitBy) => {
   const [start, end] = toSplit;
   const [startOther, endOther] = splitBy;
 
@@ -44,15 +44,15 @@ exports.splitToNonOverlappingRanges = (toSplit, splitBy) => {
   throw new Error('unhandled split case');
 };
 
-exports.splitMultiDimension = (toSplit, splitBy) => {
+exports.splitToNonOverLappingMultiDimension = (toSplit, splitBy) => {
   if (toSplit.length === 2) {
-    const xRranges = this.splitToNonOverlappingRanges(toSplit[0], splitBy[0]);
-    const yRanges = this.splitToNonOverlappingRanges(toSplit[1], splitBy[1]);
+    const xRranges = this.splitToNonOverlappingRanges1D(toSplit[0], splitBy[0]);
+    const yRanges = this.splitToNonOverlappingRanges1D(toSplit[1], splitBy[1]);
     return xRranges.flatMap(xRange => yRanges.map(yRange => [xRange, yRange]));
   }
-  const xRranges = this.splitToNonOverlappingRanges(toSplit[0], splitBy[0]);
-  const yRanges = this.splitToNonOverlappingRanges(toSplit[1], splitBy[1]);
-  const zRanges = this.splitToNonOverlappingRanges(toSplit[2], splitBy[2]);
+  const xRranges = this.splitToNonOverlappingRanges1D(toSplit[0], splitBy[0]);
+  const yRanges = this.splitToNonOverlappingRanges1D(toSplit[1], splitBy[1]);
+  const zRanges = this.splitToNonOverlappingRanges1D(toSplit[2], splitBy[2]);
   return xRranges.flatMap(xRange =>
     yRanges.flatMap(yRange => zRanges.map(zRange => [xRange, yRange, zRange]))
   );
@@ -78,19 +78,21 @@ const doesOverlap = (rangeA, rangeB) =>
 const itemCountInRange = range =>
   range.reduce((accu, [start, end]) => accu * Math.abs(end - start + 1), 1);
 
-let onRanges = [];
-const start = Date.now();
-
-lines.forEach(line => {
-  onRanges = onRanges
+const nextState = (onRanges, line) => {
+  const newOnRanges = onRanges
     .flatMap(range =>
-      doesOverlap(range, line.range) ? this.splitMultiDimension(range, line.range) : [range]
+      doesOverlap(range, line.range)
+        ? this.splitToNonOverLappingMultiDimension(range, line.range)
+        : [range]
     )
     .filter(range => !doesContain(line.range, range));
   if (line.action === 'on') {
-    onRanges.push(line.range);
+    newOnRanges.push(line.range);
   }
-});
+  return newOnRanges;
+};
 
-console.log('result', _.sum(onRanges.map(itemCountInRange)));
-console.log('took', Date.now() - start);
+exports.solve = () => {
+  const onRanges = lines.reduce(nextState, []);
+  console.log('result', _.sum(onRanges.map(itemCountInRange)));
+};
