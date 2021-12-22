@@ -44,18 +44,19 @@ exports.splitToNonOverlappingRanges1D = (toSplit, splitBy) => {
   throw new Error('unhandled split case');
 };
 
+exports.allCombinations = optionsBySpot => {
+  if (optionsBySpot.length === 0) return [[]];
+  return optionsBySpot[0].flatMap(value => {
+    const tailCombinations = this.allCombinations(optionsBySpot.slice(1));
+    return tailCombinations.map(combination => [value, ...combination]);
+  });
+};
+
 exports.splitToNonOverLappingMultiDimension = (toSplit, splitBy) => {
-  if (toSplit.length === 2) {
-    const xRranges = this.splitToNonOverlappingRanges1D(toSplit[0], splitBy[0]);
-    const yRanges = this.splitToNonOverlappingRanges1D(toSplit[1], splitBy[1]);
-    return xRranges.flatMap(xRange => yRanges.map(yRange => [xRange, yRange]));
-  }
-  const xRranges = this.splitToNonOverlappingRanges1D(toSplit[0], splitBy[0]);
-  const yRanges = this.splitToNonOverlappingRanges1D(toSplit[1], splitBy[1]);
-  const zRanges = this.splitToNonOverlappingRanges1D(toSplit[2], splitBy[2]);
-  return xRranges.flatMap(xRange =>
-    yRanges.flatMap(yRange => zRanges.map(zRange => [xRange, yRange, zRange]))
+  const optionsByAxis =_.range(0, toSplit.length).map(axis =>
+    this.splitToNonOverlappingRanges1D(toSplit[axis], splitBy[axis])
   );
+  return this.allCombinations(optionsByAxis);
 };
 
 const doesContain = (big, small) =>

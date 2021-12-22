@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --watch",
+    "test:verbose": "jest --watch --verbose",
     "solve": "clear; node execute.js"
   },
   "repository": {
