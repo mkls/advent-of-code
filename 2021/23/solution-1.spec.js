@@ -1,6 +1,6 @@
 'use strict';
 
-const solution = require('./solution');
+const solution = require('./solution-1');
 
 describe('2021 day 23', () => {
   describe('getNextPositions', () => {
