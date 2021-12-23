@@ -21,6 +21,7 @@
   "dependencies": {
     "dijkstrajs": "^1.0.2",
     "jest": "^27.4.5",
+    "json-stable-stringify": "^1.0.1",
     "lodash": "^4.17.21",
     "mathjs": "^10.0.0"
   },
