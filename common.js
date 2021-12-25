@@ -19,3 +19,14 @@ exports.printPoints = points => {
   const out = board.map(row => row.join('')).join('\n');
   console.log(out);
 };
+
+exports.printPointMapWithKnownRange = (points, xMax, yMax) => {
+  const board = _.range(0, xMax + 1).map(() => _.range(0, yMax + 1).map(() => '.'));
+
+  _.toPairs(points).forEach(([location, value]) => {
+    const [x, y] = location.split(',').map(Number);
+    board[y][x] = value;
+  });
+  const out = board.map(row => row.join('')).join('\n');
+  console.log(out);
+};
