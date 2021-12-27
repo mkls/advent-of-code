@@ -1,14 +1,25 @@
 'use strict';
 
-console.log('\n\n ------------------------------ Script start ------------------------------ \n\n');
+const fs = require('fs');
 
-const args = process.argv.slice(2);
+console.log('\n\n ------------------------------ Script start ------------------------------ \n');
 
-const day = args[0];
-const year = args[1] || 2021;
+const [year, day, useExampleFlag] = process.argv.slice(2);
+const basePath = `./20${year}/${day}`;
 
-const solver = require(`./${year}/${day}/solution.js`);
+const solver = require(`${basePath}/solution.js`);
 
 if (solver.solve) {
   solver.solve();
+}
+
+if (typeof solver.main === 'function') {
+  const inputFile = ['e', 'example'].includes(useExampleFlag) ? 'example.txt' : 'actual.txt';
+  const inputFilePath = `${basePath}/${inputFile}`;
+  const inputExists = fs.existsSync(inputFilePath);
+  const input = inputExists ? fs.readFileSync(inputFilePath, 'utf-8') : null;
+
+  const result = solver.main(input);
+  console.log(`\nresult for ${inputExists ? inputFile : 'hardcoded input'}:`);
+  console.log(result);
 }

@@ -6,6 +6,4 @@ const lines = require('fs')
   .readFileSync(__dirname + '/example.txt', 'utf-8')
   .split('\n');
 
-exports.solve = () => {
-  console.log(lines.length);
-};
+console.log(lines.length);
