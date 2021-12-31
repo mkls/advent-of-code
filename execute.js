@@ -19,7 +19,9 @@ if (typeof solver.main === 'function') {
   const inputExists = fs.existsSync(inputFilePath);
   const input = inputExists ? fs.readFileSync(inputFilePath, 'utf-8') : null;
 
+  const start = Date.now();
   const result = solver.main(input);
-  console.log(`\nresult for ${inputExists ? inputFile : 'hardcoded input'}:`);
+  const inputToPrint = inputExists ? inputFile : 'hardcoded input';
+  console.log(`\nresult for ${inputToPrint}: (took ${Date.now() - start} ms)`);
   console.log(result);
 }
