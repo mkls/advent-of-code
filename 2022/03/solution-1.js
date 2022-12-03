@@ -3,11 +3,12 @@
 const _ = require('lodash'); // eslint-disable-line no-unused-vars
 
 exports.main = input => {
-  return _.sum(
-    _.chunk(input.split('\n'), 3)
-      .map(g => g[0].split('').find(l => g[1].includes(l) && g[2].includes(l)))
-      .map(getPrio)
-  );
+  const prios = input
+    .split('\n')
+    .map(l => [l.slice(0, l.length / 2).split(''), l.slice(l.length / 2).split('')])
+    .map(([c1, c2]) => c1.find(x => c2.includes(x)))
+    .map(getPrio);
+  return _.sum(prios);
 };
 
 const getPrio = letter => {
