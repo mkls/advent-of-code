@@ -17,15 +17,14 @@ const state = [
 
 exports.main = input => {
   const [, rawMoves] = input.split('\n\n');
-  const moves = rawMoves.split('\n').map(l => {
+  const moves = rawMoves.split('\n').flatMap(l => {
     const [, count, , from, , to] = l.split(' ').map(Number);
-    return { count, from, to };
+    return _.range(count).map(() => ({ from, to }));
   });
 
-  moves.forEach(({ count, from, to }) => {
-    const toMove = state[from - 1].slice(0, count);
-    state[from - 1] = state[from - 1].slice(count);
-    state[to - 1] = [...toMove, ...state[to - 1]];
+  moves.forEach(({ from, to }) => {
+    const item = state[from - 1].shift();
+    state[to - 1].unshift(item);
   });
   return state.map(s => s[0]).join('');
 };
